@@ -1,0 +1,54 @@
+@startuml
+
+hide circle
+
+skinparam linetype ortho
+
+entity "CATEGORY" as c {
+  *CATEGORY_ID : UUID <<PK1>>
+  --
+  *NAME : VARCHAR(255) <<U1,NN>>
+}
+
+entity "AUTHOR" as a {
+  *AUTHOR_ID : UUID <<PK1>>
+  --
+  *FULL_NAME : VARCHAR(255) <<U1,NN>>
+}
+
+entity "PUBLISHER" as p {
+  *PUBLISHER_ID : UUID <<PK1>>
+  --
+  *NAME : VARCHAR(255) <<U1,NN>>
+}
+
+entity "BOOK" as b {
+  *BOOK_ID : UUID <<PK1>>
+  --
+  *ISBN : VARCHAR(14) <<U1>>
+  *TITLE : VARCHAR(255) <<NN>>
+  *PUBLICATION_DATE : DATE <<NN>>
+  *PUBLISHER_ID : UUID <<FK>>
+  *RATING : NUMERIC(4, 3)
+}
+
+entity "BOOK_CATEGORY" as bc {
+  *BOOK_ID : UUID <<PK1,FK>>
+  *CATEGORY_ID : UUID <<PK1,FK>>
+  --
+}
+
+entity "BOOK_AUTHOR" as ba {
+  *BOOK_ID : UUID <<PK1,FK>>
+  *AUTHOR_ID : UUID <<PK1,FK>>
+  --
+}
+
+b ||..|{ bc
+b ||..|{ ba
+b ||..|{ p
+
+c ||..|{ bc
+a ||..|{ ba
+
+@enduml

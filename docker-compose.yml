@@ -1,0 +1,52 @@
+version: '3.1'
+
+services:
+
+  fasttablespace:
+    image: busybox
+    restart: "no"
+    command: >
+        sh -c "mkdir -p /ssd1/postgresql/data/fasttablespace
+        && chown -R 999:999 /ssd1/postgresql/data/fasttablespace"
+    volumes:
+      - fasttablespace:/ssd1/postgresql/data
+
+  postgres:
+    image: postgres:13
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: s3cr3t
+    command:
+      - "postgres"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - fasttablespace:/ssd1/postgresql/data
+    depends_on: 
+      - fasttablespace
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: s3cr3t
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+      - ./pgadmin4/servers.json:/pgadmin4/servers.json
+    ports:
+      - 8080:80
+    depends_on: 
+      - postgres
+      
+volumes:
+  pgdata:
+    driver: local
+  pgadmin-data:
+    driver: local
+  fasttablespace:
+    driver: local

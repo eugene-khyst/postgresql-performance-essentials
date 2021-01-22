@@ -890,9 +890,9 @@ The more indexes you have, the slower `INSERT` statements will become.
 Make sure you don't have an unused indexes.
 
 1. Reset statistics counters to zeros
-  ```sql
-  SELECT pg_stat_reset();
-  ```
+    ```sql
+    SELECT pg_stat_reset();
+    ```
 
 2. Let the system work for some time after resetting statistics.
 
