@@ -972,7 +972,7 @@ It has to be preloaded using `shared_preload_libraries=pg_stat_statements`.
            ROUND(mean_exec_time::numeric, 2) AS mean,
            query
       FROM pg_stat_statements
-  ORDER BY total_exec_time DESC
+     ORDER BY total_exec_time DESC
      LIMIT 20;
     ```
 
