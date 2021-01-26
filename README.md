@@ -39,7 +39,7 @@ This example covers the most important topics related to PostgreSQL performance.
 
 ![ER-diagram](img/tables.png)
 
-1. Create schema by executing DDL statements from [`schema.sql`](schema.sql)
+1. Create schema by executing DDL statements from [`tables.sql`](tables.sql)
 
 2. Create test data by executing DML statements from [`data.sql`](data.sql)
 
