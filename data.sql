@@ -1,10 +1,3 @@
-INSERT INTO category (category_id, name)
-VALUES
-('940ff0d0-88b7-413e-ac43-8938bcdae665', 'Software Reuse'),
-('c5ccfb21-2f89-468a-aeac-645823f5fc42', 'Object-Oriented Software Design'),
-('d4747177-46f2-477a-b580-641890ae645b', 'Software Design & Engineering'),
-('963d44f4-ad3f-4086-9e05-83290242381b', 'Databases & Big Data');
-
 INSERT INTO author (author_id, full_name)
 VALUES 
 ('def8af9d-1191-4199-9600-fe3f7825a742', 'Erich Gamma'),
@@ -34,17 +27,6 @@ VALUES
 ('aa8811c4-7f06-44f9-b934-a648d4d908c6', '978-0321200686', 'Enterprise Integration Patterns: Designing, Building, and Deploying Messaging Solutions', '2003-08-10', '05a85ed5-e00d-49ad-a215-795dbfd87937', 4.7),
 ('f8a7f930-5b23-480b-bfea-7f77c5cb2db9', '978-0321826626', 'NoSQL Distilled: A Brief Guide to the Emerging World of Polyglot Persistence', '2012-08-08', '05a85ed5-e00d-49ad-a215-795dbfd87937', 4.4),
 ('aa327ea7-58ee-42dc-8c49-83f68bc50da7', '978-1449373320', 'Designing Data-Intensive Applications: The Big Ideas Behind Reliable, Scalable, and Maintainable Systems', '2017-04-18', 'a080026e-51d8-4e88-ba05-063ce43a83af', 4.8);
-
-INSERT INTO book_category (book_id, category_id)
-VALUES
-('9a58f19c-bf6a-4cd0-be4a-33fa33264473', '940ff0d0-88b7-413e-ac43-8938bcdae665'),
-('9a58f19c-bf6a-4cd0-be4a-33fa33264473', 'c5ccfb21-2f89-468a-aeac-645823f5fc42'),
-('f00b659b-95e6-47f6-af5f-ec25c4e38631', 'c5ccfb21-2f89-468a-aeac-645823f5fc42'),
-('58b46e28-ec87-4776-b46d-180046780132', 'c5ccfb21-2f89-468a-aeac-645823f5fc42'),
-('54c8cf28-e071-47ed-97e5-2002512509ea', 'c5ccfb21-2f89-468a-aeac-645823f5fc42'),
-('aa8811c4-7f06-44f9-b934-a648d4d908c6', 'c5ccfb21-2f89-468a-aeac-645823f5fc42'),
-('f8a7f930-5b23-480b-bfea-7f77c5cb2db9', '963d44f4-ad3f-4086-9e05-83290242381b'),
-('aa327ea7-58ee-42dc-8c49-83f68bc50da7', 'd4747177-46f2-477a-b580-641890ae645b');
 
 INSERT INTO book_author (book_id, author_id)
 VALUES

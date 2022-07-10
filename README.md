@@ -1,31 +1,33 @@
 # PostgreSQL Performance Essentials in 1 Hour
 
-* [Run PostgreSQL and pgAdmin](#31bb545671c6f28bf4d0c32e9ff42e10)
-* [Create sample schema with data](#46c030b410d17f0142ec5c684020c12b)
-* [Query plan](#d3f45a1dbf52313215de2d72335b08c9)
-* [Seq Scan](#5077602cb415acf28d7b838fd00c4c86)
-* [Index selectivity](#8ab5ea27dde1f77a2a3059f626b52ca5)
-* [B-Tree indexes](#a4a9f6a9d3e60a151754f45f91f5978c)
-  * [Index Scan](#9e0a689058c255f7dbc8a3303cec18a8)
-  * [Bitmap Scans](#0aca2dd64d94c0de22b10b1249f3d461)
-* [Multicolumn indexes](#063cd14ca3da4c69df873907b8cd09f2)
-  * [Index Only Scan](#0bc6a1f1a4c2655e1ad0f09702ca813d)
-* [Unique indexes](#e0b12e6f9f94a86f5c585a73a7824d4a)
-* [Partial indexes](#a9961238a26d752aadf86e48184eef90)
-* [Expression indexes](#41e31e7b92b335c5f475794040a589a4)
-* [GIN indexes](#1d7f7e5f39be8319be61e0509a9e0090)
-* [Hash indexes](#c39d79c0c6f99d7ff585ac9408522a22)
-* [Create indexes on foreign keys](#9604d17d77116450f47e7f7d7cb37c58)
-* [Use more joins](#7fc107be8e1d492f8fc88bec58ff7740)
-* [Don't over-index](#76ccb0862b9d9d30188b32c852396b28)
-* [Keep statistics updated](#2b1d46eeefdef5de7e4b4d5ce62849c4)
-* [Detect slow queries](#8f264ba3b501b66608e02c8c5efc2c58)
-* [Cluster a table according to an index](#ae39d16394b02eaba62f114a8d4231b2)
-* [Use table partitioning](#88bb68b618474d18c73e4ada7256cfd9)
+- [Run PostgreSQL and pgAdmin](#31bb545671c6f28bf4d0c32e9ff42e10)
+- [Create sample schema with data](#46c030b410d17f0142ec5c684020c12b)
+- [Query plan](#d3f45a1dbf52313215de2d72335b08c9)
+- [Seq Scan](#5077602cb415acf28d7b838fd00c4c86)
+- [Index selectivity](#8ab5ea27dde1f77a2a3059f626b52ca5)
+- [B-Tree indexes](#a4a9f6a9d3e60a151754f45f91f5978c)
+  - [Index Scan](#9e0a689058c255f7dbc8a3303cec18a8)
+  - [Bitmap Scans](#0aca2dd64d94c0de22b10b1249f3d461)
+- [Multicolumn indexes](#063cd14ca3da4c69df873907b8cd09f2)
+  - [Index Only Scan](#0bc6a1f1a4c2655e1ad0f09702ca813d)
+- [Unique indexes](#e0b12e6f9f94a86f5c585a73a7824d4a)
+- [Partial indexes](#a9961238a26d752aadf86e48184eef90)
+- [Expression indexes](#41e31e7b92b335c5f475794040a589a4)
+- [GIN indexes](#1d7f7e5f39be8319be61e0509a9e0090)
+- [Hash indexes](#c39d79c0c6f99d7ff585ac9408522a22)
+- [Create indexes on foreign keys](#9604d17d77116450f47e7f7d7cb37c58)
+- [Use more joins](#7fc107be8e1d492f8fc88bec58ff7740)
+- [Don't over-index](#76ccb0862b9d9d30188b32c852396b28)
+- [Keep statistics updated](#2b1d46eeefdef5de7e4b4d5ce62849c4)
+- [Detect slow queries](#8f264ba3b501b66608e02c8c5efc2c58)
+- [Cluster a table according to an index](#ae39d16394b02eaba62f114a8d4231b2)
+- [Use table partitioning](#88bb68b618474d18c73e4ada7256cfd9)
+
+<!-- Table of contents is made with https://github.com/evgeniy-khist/markdown-toc -->
 
 This example covers the most important topics related to PostgreSQL performance.
 
-## <a name="31bb545671c6f28bf4d0c32e9ff42e10"></a>Run PostgreSQL and pgAdmin
+## <a id="31bb545671c6f28bf4d0c32e9ff42e10"></a>Run PostgreSQL and pgAdmin
 
 1. Make sure Docker and Docker Compose are installed and up to date
 
@@ -35,7 +37,7 @@ This example covers the most important topics related to PostgreSQL performance.
 
 4. Connect to `Local PostgreqSQL` as `admin/s3cr3t`
 
-## <a name="46c030b410d17f0142ec5c684020c12b"></a>Create sample schema with data
+## <a id="46c030b410d17f0142ec5c684020c12b"></a>Create sample schema with data
 
 ![ER-diagram](img/tables.png)
 
@@ -53,11 +55,14 @@ This example covers the most important topics related to PostgreSQL performance.
       FROM generate_series(1, 100000);
     ```
 
+    -- Notify query planner of drastically changed table size
+VACUUM ANALYZE;
+
 ---
 
 * https://www.postgresql.org/docs/13/functions-srf.html
 
-## <a name="d3f45a1dbf52313215de2d72335b08c9"></a>Query plan
+## <a id="d3f45a1dbf52313215de2d72335b08c9"></a>Query plan
 
 PostgreSQL has *planner/optimizer* that creates an optimal execution plan.
 
@@ -84,14 +89,14 @@ A query plan shows what type of scanning was used for the query:
 * Index Scan
 * Index Only Scan
 
-To display a query plan as a diagram with an additional information in pgAdmin 4 use `EXPLAIN (ANALYZE, COSTS, VERBOSE, BUFFERS, FORMAT JSON)`.
+To display a query plan as a diagram with the additional information in pgAdmin 4 use `EXPLAIN (ANALYZE, COSTS, VERBOSE, BUFFERS, FORMAT JSON)`.
 
 ---
 
 * https://www.postgresql.org/docs/13/planner-optimizer.html
 * https://www.postgresql.org/docs/13/sql-explain.html
 
-## <a name="5077602cb415acf28d7b838fd00c4c86"></a>Seq Scan
+## <a id="5077602cb415acf28d7b838fd00c4c86"></a>Seq Scan
 
 Seq Scan is a full table scan and always reads everything in the table. 
 It scans through every page of data sequentially.
@@ -158,7 +163,7 @@ It scans through every page of data sequentially.
      ORDER BY seq_tup_read DESC;
     ```
 
-## <a name="8ab5ea27dde1f77a2a3059f626b52ca5"></a>Index selectivity
+## <a id="8ab5ea27dde1f77a2a3059f626b52ca5"></a>Index selectivity
 
 The number of distinct values in the indexed column divided by the number of records in the table is called a selectivity of an index.
 
@@ -196,9 +201,9 @@ Selectivity is one of factors influencing type of scanning the planner/optimezer
 
 Prefer indexing columns with selectivity greater than > 0.85.
 
-## <a name="a4a9f6a9d3e60a151754f45f91f5978c"></a>B-Tree indexes
+## <a id="a4a9f6a9d3e60a151754f45f91f5978c"></a>B-Tree indexes
 
-### <a name="9e0a689058c255f7dbc8a3303cec18a8"></a>Index Scan
+### <a id="9e0a689058c255f7dbc8a3303cec18a8"></a>Index Scan
 
 Index Scan uses an index to find rows matching a predicate.
 It finds each row in the index and then reads the actual data from the table.
@@ -271,7 +276,7 @@ It finds each row in the index and then reads the actual data from the table.
     "Execution Time: 19.364 ms"
     ```
 
-### <a name="0aca2dd64d94c0de22b10b1249f3d461"></a>Bitmap Scans
+### <a id="0aca2dd64d94c0de22b10b1249f3d461"></a>Bitmap Scans
 
 If index selectivity is bad (approximately less than < 0.85), 
 the planner/optimizer will use Bitmap Scan instead of Index Scan.
@@ -340,7 +345,7 @@ There is Bitmap Index Scan at the bottom and then Bitmap Heap Scan.
     "Execution Time: 0.881 ms"
     ```
 
-## <a name="063cd14ca3da4c69df873907b8cd09f2"></a>Multicolumn indexes
+## <a id="063cd14ca3da4c69df873907b8cd09f2"></a>Multicolumn indexes
 
 1. Sometimes two or more columns with poor selectivity can be combined to form a multicolumn index with good selectivity
     ```sql
@@ -476,7 +481,7 @@ There is Bitmap Index Scan at the bottom and then Bitmap Heap Scan.
     "Execution Time: 15.564 ms"
     ```
 
-### <a name="0bc6a1f1a4c2655e1ad0f09702ca813d"></a>Index Only Scan
+### <a id="0bc6a1f1a4c2655e1ad0f09702ca813d"></a>Index Only Scan
 
 [Index Only Scan](https://www.postgresql.org/docs/current/indexes-index-only-scans.html) fetches data directly from the index without reading the table data entirely.
 
@@ -500,7 +505,7 @@ QUERY PLAN
 "Execution Time: 0.472 ms"
 ```
 
-## <a name="e0b12e6f9f94a86f5c585a73a7824d4a"></a>Unique indexes
+## <a id="e0b12e6f9f94a86f5c585a73a7824d4a"></a>Unique indexes
 
 A unique index guarantees that the table column values won't have duplicates.
 
@@ -534,7 +539,7 @@ QUERY PLAN
 
 * https://www.postgresql.org/docs/13/indexes-unique.html
 
-## <a name="a9961238a26d752aadf86e48184eef90"></a>Partial indexes
+## <a id="a9961238a26d752aadf86e48184eef90"></a>Partial indexes
 
 A partial index is an index with a `WHERE` clause.
 
@@ -598,7 +603,7 @@ Use partial indexes to exclude rows from an index that are not likely to be quer
 
 * https://www.postgresql.org/docs/13/indexes-partial.html
 
-## <a name="41e31e7b92b335c5f475794040a589a4"></a>Expression indexes
+## <a id="41e31e7b92b335c5f475794040a589a4"></a>Expression indexes
 
 Expression indexes are useful for queries using function in the `WHERE` clause.
 
@@ -644,7 +649,7 @@ Expression indexes are useful for queries using function in the `WHERE` clause.
 
 * https://www.postgresql.org/docs/13/indexes-expressional.html
 
-## <a name="1d7f7e5f39be8319be61e0509a9e0090"></a>GIN indexes
+## <a id="1d7f7e5f39be8319be61e0509a9e0090"></a>GIN indexes
 
 GIN indexes are "inverted indexes".
 An inverted index contains a separate entry for each component value, and can efficiently handle queries that test for the presence of specific component values.
@@ -723,7 +728,7 @@ An inverted index contains a separate entry for each component value, and can ef
 
 * https://www.postgresql.org/docs/13/indexes-types.html
 
-## <a name="c39d79c0c6f99d7ff585ac9408522a22"></a>Hash indexes
+## <a id="c39d79c0c6f99d7ff585ac9408522a22"></a>Hash indexes
 
 Hash index is a flat structure unlike B-Tree.
 
@@ -765,7 +770,7 @@ To use Hash indexes PostgreSQL 10+ is required.
     "Execution Time: 0.043 ms"
     ```
 
-## <a name="9604d17d77116450f47e7f7d7cb37c58"></a>Create indexes on foreign keys
+## <a id="9604d17d77116450f47e7f7d7cb37c58"></a>Create indexes on foreign keys
 
 Make sure every foreign key has a matching index.
 
@@ -856,7 +861,7 @@ There are few exceptions when index on foreign key is unnecessary:
     
   6. Take the values of the `sql` column form the result set and execute to create the missing indexes.
 
-## <a name="7fc107be8e1d492f8fc88bec58ff7740"></a>Use more joins
+## <a id="7fc107be8e1d492f8fc88bec58ff7740"></a>Use more joins
 
 PostgreSQL is good at joining multiple tables.
 Queries with joins are usually better than subqueries.
@@ -881,7 +886,7 @@ SELECT b.isbn,
  WHERE b.title LIKE '%Patterns%';
 ```
 
-## <a name="76ccb0862b9d9d30188b32c852396b28"></a>Don't over-index
+## <a id="76ccb0862b9d9d30188b32c852396b28"></a>Don't over-index
 
 Maintaining a lot of indexes has its price.
 Indexes consume disk space.
@@ -919,7 +924,7 @@ Make sure you don't have an unused indexes.
      ORDER BY pg_relation_size(s.indexrelid) DESC;
     ```
 
-## <a name="2b1d46eeefdef5de7e4b4d5ce62849c4"></a>Keep statistics updated
+## <a id="2b1d46eeefdef5de7e4b4d5ce62849c4"></a>Keep statistics updated
 
 The planner/optimizer relies on statistics about the contents of tables in order to generate good plans for queries.
 
@@ -943,7 +948,7 @@ SELECT schemaname,
 
 * https://www.postgresql.org/docs/13/routine-vacuuming.html
 
-## <a name="8f264ba3b501b66608e02c8c5efc2c58"></a>Detect slow queries
+## <a id="8f264ba3b501b66608e02c8c5efc2c58"></a>Detect slow queries
 
 To detect slow queries `pg_stat_statements` extension is required.
 It has to be preloaded using `shared_preload_libraries=pg_stat_statements`.
@@ -980,7 +985,7 @@ It has to be preloaded using `shared_preload_libraries=pg_stat_statements`.
 
 * https://www.postgresql.org/docs/13/runtime-config-client.html#RUNTIME-CONFIG-CLIENT-PRELOAD
 
-## <a name="ae39d16394b02eaba62f114a8d4231b2"></a>Cluster a table according to an index
+## <a id="ae39d16394b02eaba62f114a8d4231b2"></a>Cluster a table according to an index
 
 When a table is clustered, it is physically reordered based on the index information.
 
@@ -999,7 +1004,7 @@ Clustering is a one-time operation: when the table is subsequently updated, the 
 
 * https://www.postgresql.org/docs/13/sql-cluster.html
 
-## <a name="88bb68b618474d18c73e4ada7256cfd9"></a>Use table partitioning
+## <a id="88bb68b618474d18c73e4ada7256cfd9"></a>Use table partitioning
 
 Partitioning refers to splitting what is logically one large table into smaller physical pieces.
 
